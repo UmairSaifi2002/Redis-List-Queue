@@ -45,6 +45,7 @@ def main():
             if result is None:
                 continue   # shouldn't happen with timeout=0, but safe
 
+            # Tuple unpacking: _, raw_message = result — pehla element (queue name) ignore kar diya, dusra (message) le liya
             _, raw_message = result
             order = json.loads(raw_message)
 

@@ -21,6 +21,19 @@ def process_order(order: dict, worker_id: str):
 
     print(f"  [{worker_id}] ✅ Order #{order['order_id']} done")
 
+def recover_stuck_messages(max_age_seconds=60):
+    """
+    Processing queue mein jo messages purane ho gaye hain,
+    unko wapas main queue mein daal do.
+    """
+    # Ye ek simple version hai. Production mein aap
+    # timestamps maintain karte ho taaki pata chale kaunse
+    # messages "stuck" hain.
+    stuck = r.lrange(PROCESSING_QUEUE, 0, -1)
+    for msg in stuck:
+        r.lpush(QUEUE_NAME, msg)
+        r.lrem(PROCESSING_QUEUE, 1, msg)
+        print(f"♻️  Recovered: {msg[:50]}...")
 
 def main():
     worker_id = sys.argv[1] if len(sys.argv) > 1 else "W1"
